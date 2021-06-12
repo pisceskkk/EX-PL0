@@ -1,0 +1,55 @@
+   0 program main;
+   0    var i,j,index,temp,k,x:integer;
+   1 begin
+   2     k:=0;
+   5     x:=10;
+   8     for index:= 1 to x do
+****       ^10
+****       ^10
+****             ^33
+****               ^23
+****                 ^40
+****                 ^13
+  10         begin
+****             ^23
+  10         case index mod 3 of
+****            ^10
+****            ^10
+****                  ^33
+****                           ^23
+  13             2: k:=k+0;
+****             ^40
+****             ^13
+  14             1: k:=k+1;
+****             ^13
+  19             0: k:=k+2
+****             ^13
+  22             end
+  24         end;
+****            ^13
+  25     call write(k);
+   1   ENTP  1    9
+   2  LODA   1    7
+   3  LIT    0    0
+   4  STO    0    0
+   5  LODA   1    8
+   6  LIT    0   10
+   7  STO    0    0
+   8  LODA   0    0
+   9  LOD    1    5
+  10  LODA   0    0
+  11  LOD    1    5
+  12  LIT    0    3
+  13  IMOD   0    0
+  14  LODA   1    7
+  15  LOD    1    7
+  16  LIT    0    1
+  17   ADD   0    0
+  18  STO    0    0
+  19  LODA   1    7
+  20  LOD    1    7
+  21  LIT    0    2
+  22   ADD   0    0
+  23  STO    0    0
+  24  ENDP   0    0
+****        ^38

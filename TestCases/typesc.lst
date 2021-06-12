@@ -1,0 +1,55 @@
+   0 program main;
+   0    var date1 : record
+   1       year : integer;
+   1       month : integer;
+   1       day : integer;
+   1        s: real;
+   1        name: char;
+   1    end;
+   1 
+   1    var date2 : record
+   1        year : integer;
+   1        month : integer;
+   1        day : integer;
+   1        s: real;
+   1        name: char;
+   1     end;
+   1 
+   1 begin
+   2    date1.day := 14;
+   5    date1.month := 2;
+   8    date1.year := 2000;
+  11    date1.s:=0.00019;
+  14    date1.name:='K';
+  17 
+  17     date2.day := 15;
+  20    date2.month := 3;
+  23    date2.year := 1998;
+  26    date2.s:=2e-4;
+  29    date2.name:='O';
+  32 
+  32 
+  32     if (date1.year > date2.year)then
+  35           call write(1)
+  38        else
+  38           call write(0);
+  41 
+  41     if (date1.month > date2.month) then
+  44             call write(1)
+  47         else
+  47            call write(0);
+  50 
+  50     if (date1.day > date2.day)then
+  53            call write(1)
+  56         else
+  56            call write(0);
+  59 
+  59     if (date1.s > date2.s)then
+  62             call write(1)
+  65         else
+  65             call write(0);
+  68     if(date1.name=date2.name)then
+  71             call write(1)
+  74         else
+  74             call write(0)
+  77 end.

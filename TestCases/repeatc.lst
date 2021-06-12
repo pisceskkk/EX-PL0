@@ -1,0 +1,42 @@
+   0 program main;
+   0     var k,i,j:integer;
+   1 begin
+   2     j := 1;
+   5     i := 1;
+   8     repeat
+   8         if j>100
+  10             then call write(j);
+  14         k := j ;
+  17         j := i+j;
+  22         i := k
+  23     until j >1000
+  27 end.
+   1  ENTP   1              6
+   2  LODA   1              5
+   3  LIT    0              1
+   4  STO    0              0
+   5  LODA   1              4
+   6  LIT    0              1
+   7  STO    0              0
+   8  LOD    1              5
+   9  LIT    0            100
+  10  GT     0              0
+  11  JPC    0             14
+  12  LOD    1              5
+  13  WRT    0              0
+  14  LODA   1              3
+  15  LOD    1              5
+  16  STO    0              0
+  17  LODA   1              5
+  18  LOD    1              4
+  19  LOD    1              5
+  20  ADD    0              0
+  21  STO    0              0
+  22  LODA   1              4
+  23  LOD    1              3
+  24  STO    0              0
+  25  LOD    1              5
+  26  LIT    0           1000
+  27  GT     0              0
+  28  JPC    0              8
+  29  ENDP   0              0

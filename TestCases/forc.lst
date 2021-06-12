@@ -1,0 +1,64 @@
+   0 program pp;
+   0 var
+   1     ch: char;
+   1     i, j, x: integer;
+   1 begin
+   2     x:=2;
+   5 
+   5     for ch:='a' to 'z' do
+****       ^10
+****       ^10
+****          ^33
+****            ^23
+****               ^40
+****               ^13
+   7      begin
+****          ^23
+   7      if ch='k'
+   9        then call write(ch);
+  13       if ch='o'
+  15        then call write(ch)
+  19      end;
+  19 
+  19 
+  19    for i := 1 to 10 do
+****      ^10
+****      ^10
+****        ^33
+****           ^23
+****             ^40
+****             ^13
+  21         for j := 10 downto i-1 do
+  21             begin
+****                 ^23
+  21             if i=7
+  23               then call write(j)
+  27             end
+  27 end.
+   1   ENTP  1    7
+   2  LODA   1    6
+   3  LIT    0    2
+   4  STO    0    0
+   5  LODA   0    0
+   6  LOD    1    3
+   7  LOD    1    3
+   8  LIT    0  107
+   9   EQ    0    0
+  10  JPC    0   13
+  11  LOD    1    3
+  12  WRT    0    1
+  13  LOD    1    3
+  14  LIT    0  111
+  15   EQ    0    0
+  16  JPC    0   19
+  17  LOD    1    3
+  18  WRT    0    1
+  19  LODA   0    0
+  20  LOD    1    4
+  21  LOD    1    4
+  22  LIT    0    7
+  23   EQ    0    0
+  24  JPC    0   27
+  25  LOD    1    5
+  26  WRT    0    0
+  27  ENDP   0    0

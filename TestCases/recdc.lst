@@ -1,0 +1,38 @@
+   0 program main;
+   0     var shape : integer;
+   1     var date : record
+   1         year : real;
+   1         month : real;
+   1         day : real;
+   1         case shape: integer  of
+   1         1:  (casetest1, casetest2: integer);
+   1         2:  (casetest11, casetest22: real);
+   1     end;
+   1 
+   1 begin
+   2     shape := 2;
+   5 
+   5     date.day := 365;
+   8     date.month := date.day/30;
+  13     date.year := date.month / 12;
+  18 
+  18 
+  18     if ((date.year > 1.0138) and (date.year - 1.0138 < 0.0001)) or ((date.year < 1.0138) and (1.0138 - date.year < 0.0001)) then
+  37         if (shape = 1) then
+  41         begin
+  42             date.casetest1 := 1;
+  45             date.casetest2 := -1;
+  49             call write(date.casetest2)
+  51         end
+  51         else
+  51         begin
+  52             date.casetest11 := 0.01;
+  55             date.casetest22 := -1;
+  59             if (date.casetest11>0.0) then
+  62             call write(date.casetest22)
+  65         end
+  65 
+  65     else
+  65         call write(0)
+  68 
+  68 end.

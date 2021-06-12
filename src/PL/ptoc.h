@@ -1,0 +1,58 @@
+#ifndef __PTOC_H__
+#define __PTOC_H__
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <assert.h>
+
+#ifndef WIN32
+#include <limits.h>
+#define _MAX_PATH   260
+#define _MAX_DRIVE  3
+#define _MAX_DIR    256
+#define _MAX_FNAME  256
+#define _MAX_EXT    256
+#endif
+#define items(x) (sizeof(x)/sizeof(*(x)))
+
+
+typedef int           integer;
+typedef unsigned      cardinal; /* unsigned integer */
+typedef float         real;
+
+#if defined(TURBO_PASCAL) || defined(HP_PASCAL)
+typedef unsigned       word; /* It should have the same size as integer */
+typedef unsigned char  byte;
+#endif
+
+#ifdef TURBO_PASCAL
+typedef long           longint;
+typedef signed char    shortint;
+typedef void*          pointer;
+typedef const char*    asciiz;
+#endif
+
+typedef unsigned char boolean;
+#define true          (1)
+#define false         (0)
+
+#define nil           NULL
+
+#define EXTERN        extern
+
+/*
+ * Pascal runtime library headers
+ */
+
+#include "io_cpp.h"
+#include "io.h"
+#include "array.h"
+#include "varing_string.h"
+#include "set.h"
+#include "set_cpp.h"
+
+#endif
+
+
