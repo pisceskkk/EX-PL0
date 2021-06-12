@@ -214,7 +214,7 @@ void simpleexpression(symset fsys, item &x, int &level);
 void term(symset fsys, item &x, int &level);
 void arrayelement(symset fsys, item &x, int &level);
 void factor(symset fsys, item &x, int &level);
-void assignment(int &i, int &level, symset &fsys);
+void assignment(int &i, int &level, symset fsys);
 void ifstatement(int &level, symset &fsys, int &cx1, int &cx2);
 void compound(symset &fsys, int &level);
 void whilestatement(int &cx1, int &level, symset &fsys, int &cx2);
@@ -1489,7 +1489,7 @@ void arrayelement(symset fsys, item &x, int &level)
     test(fsys, set_of_enum(symbol)::of(eos), 13);
 }/*arrayelement*/
 
-void assignment(int &i, int &level, symset &fsys)
+void assignment(int &i, int &level, symset fsys)
 {
     item x, y;
 
@@ -1619,6 +1619,66 @@ void repeatstatement(int &cx1, int &level, symset &fsys){
 }/*repeatstatement sk*/
 
 void forstatement(int &cx1, int &level, symset &fsys, int &cx2){
+    item end;
+    A1 iter;
+    bool dct; /*direction 0:dec, 1:inc */
+    int i;
+
+    getsym();
+    labtab[lx] = cx;
+    lx = lx + 1;
+
+    /* init iter. sk*/
+    if (sym == ident){
+        assignment(i, level, set_of_enum(symbol)::of(tosym, downtosym, eos) + fsys);
+    }
+    else error(22);
+    iter = nametab[i];
+    /* TODO: array? */
+    if (iter.typ != ints && iter.typ != chars) error(64); /* check enumerable */
+
+    if (sym == tosym) dct = 1;  /* check to/downto */
+    else if (sym == downtosym) dct = 0;
+    else error(63);
+    getsym();
+
+    cx1 = cx;
+    /* load iter. sk*/
+    if (iter.normal) gen(lod, iter.lev, iter.adr);
+    else gen(ilod, iter.lev, iter.adr);
+    /* calc end. sk*/
+    simpleexpression(set_of_enum(symbol)::of(dosym, eos) + fsys, end, level);
+    if (iter.typ != end.typ) error(40);
+    if (dct == 1){ /* iter <= end */
+        gen(le, 0, 0);
+    }
+    else { /* iter >= end */
+        gen(ge, 0, 0);
+    }
+    cx2 = cx;
+    gen(jpc, 0, 0);
+
+    if (sym == dosym)  getsym();
+    else error(37);
+    statement(fsys, level);
+
+    /* load iter's addr. sk*/
+    if (iter.normal)   gen(loda, iter.lev, iter.adr);
+    else gen(lod, iter.lev, iter.adr);
+    /* inc/dec iter */
+    if (iter.normal) gen(lod, iter.lev, iter.adr);
+    else gen(ilod, iter.lev, iter.adr);
+    gen(lit, 0, 1);
+    if (dct == 1) gen(add, 0, 0);
+    else gen(sub, 0, 0);
+    gen(sto, 0, 0);
+
+    gen(jmp, 0, cx1);
+
+    code[cx2].a = cx;
+    labtab[lx] = cx;
+    lx = lx + 1;
+
 }/*forstatement sk*/
 
 void casestatement(int &level, symset &fsys,int &cx1, int &cx2){

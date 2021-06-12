@@ -1,16 +1,20 @@
 program main;
     var x,y:real;
         i:integer;
+    procedure add(i :integer);
+    var j,k:integer;
+    begin
+        i := i+1;
+        j := i+2;
+        k := j+2;
+        j := k+2;
+        k := j+2;
+        call write(j)
+    end;
 begin
     y := 9.0;
     x := -2.3E-2;
     x := (x)*1.2;
-    repeat
-        i := 0;
-        repeat
-            call write(x);
-            i := i + 1
-        until i>2;
-        y := y+0.5
-    until (y > 10.0)
+    i := 10;
+    call add(i)
 end.

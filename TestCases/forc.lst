@@ -6,59 +6,82 @@
    2     x:=2;
    5 
    5     for ch:='a' to 'z' do
-****       ^10
-****       ^10
-****          ^33
-****            ^23
-****               ^40
-****               ^13
-   7      begin
-****          ^23
-   7      if ch='k'
-   9        then call write(ch);
-  13       if ch='o'
-  15        then call write(ch)
-  19      end;
-  19 
-  19 
-  19    for i := 1 to 10 do
-****      ^10
-****      ^10
-****        ^33
-****           ^23
-****             ^40
-****             ^13
-  21         for j := 10 downto i-1 do
-  21             begin
-****                 ^23
-  21             if i=7
-  23               then call write(j)
-  27             end
-  27 end.
-   1   ENTP  1    7
-   2  LODA   1    6
-   3  LIT    0    2
-   4  STO    0    0
-   5  LODA   0    0
-   6  LOD    1    3
-   7  LOD    1    3
-   8  LIT    0  107
-   9   EQ    0    0
-  10  JPC    0   13
-  11  LOD    1    3
-  12  WRT    0    1
-  13  LOD    1    3
-  14  LIT    0  111
-  15   EQ    0    0
-  16  JPC    0   19
-  17  LOD    1    3
-  18  WRT    0    1
-  19  LODA   0    0
-  20  LOD    1    4
-  21  LOD    1    4
-  22  LIT    0    7
-  23   EQ    0    0
-  24  JPC    0   27
-  25  LOD    1    5
-  26  WRT    0    0
-  27  ENDP   0    0
+  12      begin
+  12      if ch='k'
+  14        then call write(ch);
+  18       if ch='o'
+  20        then call write(ch)
+  24      end;
+  30 
+  30 
+  30    for i := 1 to 10 do
+  37         for j := 10 downto i-1 do
+  46             begin
+  46             if i=7
+  48               then call write(j)
+  52             end
+  52 end.
+   1  ENTP   1              7
+   2  LODA   1              6
+   3  LIT    0              2
+   4  STO    0              0
+   5  LODA   1              3
+   6  LIT    0             97
+   7  STO    0              0
+   8  LOD    1              3
+   9  LIT    0            122
+  10  LE     0              0
+  11  JPC    0             30
+  12  LOD    1              3
+  13  LIT    0            107
+  14  EQ     0              0
+  15  JPC    0             18
+  16  LOD    1              3
+  17  WRT    0              1
+  18  LOD    1              3
+  19  LIT    0            111
+  20  EQ     0              0
+  21  JPC    0             24
+  22  LOD    1              3
+  23  WRT    0              1
+  24  LODA   1              3
+  25  LOD    1              3
+  26  LIT    0              1
+  27  ADD    0              0
+  28  STO    0              0
+  29  JMP    0              8
+  30  LODA   1              4
+  31  LIT    0              1
+  32  STO    0              0
+  33  LOD    1              4
+  34  LIT    0             10
+  35  LE     0              0
+  36  JPC    0             64
+  37  LODA   1              5
+  38  LIT    0             10
+  39  STO    0              0
+  40  LOD    1              5
+  41  LOD    1              4
+  42  LIT    0              1
+  43  SUB    0              0
+  44  GE     0              0
+  45  JPC    0             58
+  46  LOD    1              4
+  47  LIT    0              7
+  48  EQ     0              0
+  49  JPC    0             52
+  50  LOD    1              5
+  51  WRT    0              0
+  52  LODA   1              5
+  53  LOD    1              5
+  54  LIT    0              1
+  55  SUB    0              0
+  56  STO    0              0
+  57  JMP    0             40
+  58  LODA   1              4
+  59  LOD    1              4
+  60  LIT    0              1
+  61  ADD    0              0
+  62  STO    0              0
+  63  JMP    0             33
+  64  ENDP   0              0
