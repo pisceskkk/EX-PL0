@@ -21,6 +21,6 @@ begin
         end;
         k:=k/2
     until k <2;
-    call write (k);
+    call write (k)
 
 end.

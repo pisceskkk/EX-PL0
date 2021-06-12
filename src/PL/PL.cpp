@@ -39,11 +39,11 @@ enum symbol {nul, ident, intcon, charcon, plus, minus, times, divsym,
              untilsym, forsym, tosym, downtosym, casesym, funcsym, fwdsym,
              /*
              TODO:
-                [ ] repeat <语句> until <表达式>
-                [ ] for <变量> := <表达式> to|downto <表达式> do <语句>
-                [ ] case <变量> of <表达式>{,<表达式>} : <语句> {;<表达式>{,<表达式>} : <语句>} [;else:<语句>] end;
+                [x] repeat <语句> until <表达式>
+                [x] for <变量> := <表达式> to|downto <表达式> do <语句>
+                [ ] case <变量> of <常数>{,<常数>} : <语句> {;<常数>{,<常数>} : <语句>} [;else:<语句>] end;
                 [ ] function <标识符>[<参数表>]:<类型>; <程序体>|forward ;
-                    [ ] function()
+                    [ ] call function()
                 sk
              */
              realcon, recdcon, /* real, record. sk*/
@@ -51,7 +51,7 @@ enum symbol {nul, ident, intcon, charcon, plus, minus, times, divsym,
              TODO:
                 real:
                     [x] wrt,red 
-                    [ ] radd, rsub, rmul, rdiv, req, rne, rls, rle, rgt, rge
+                    [x] radd, rsub, rmul, rdiv, req, rne, rls, rle, rgt, rge
                 recd:
                     [ ] define
                     [ ] .
@@ -66,6 +66,7 @@ enum opcod {lit, lod, ilod, loda, lodt, sto, lodb, cpyb, jmp, jpc, red, wrt,
             cal, retp, endp, udis, opac, entp, ands, ors, nots, imod, mus, add,
             sub, mult, idiv, eq, ne, ls, le, gt, ge,
             radd, rsub, rmult, rdiv, rls, rle, rgt, rge, /* real. sk*/
+            cpy, pop, /* case. sk*/
             last_opcod
            };  /* opration code */
 /*******************************/
@@ -336,14 +337,16 @@ void initial()
     mnemonic[ands] = "ANDS  ";
     mnemonic[ors]  = "ORS   ";
     mnemonic[nots] = "NOTS  ";
-    mnemonic[radd] = "RADD  ";
+    mnemonic[radd] = "RADD  "; /* real. sk*/
     mnemonic[rsub] = "RSUB  ";
-    mnemonic[rmult] = "RMUL  ";
+    mnemonic[rmult]= "RMUL  ";
     mnemonic[rdiv] = "RDIV  ";
     mnemonic[rls]  = "RLS   ";
     mnemonic[rle]  = "RLE   ";
     mnemonic[rgt]  = "RGT   ";
     mnemonic[rge]  = "RGT   ";
+    mnemonic[cpy]  = "CPY   "; /* case. sk*/
+    mnemonic[pop]  = "POP   ";
 
 
     declbegsys = set_of_enum(symbol)::of(constsym, varsym, typesym, procsym, funcsym, eos); /* funcsym. sk*/
@@ -692,8 +695,6 @@ L1:
         goto L1;
     }
     }    /* case */
-
-    output<<sym<<NL;
 }/* getsym */
 
 void enterarray (types tp , int l, int h)
@@ -1681,8 +1682,70 @@ void forstatement(int &cx1, int &level, symset &fsys, int &cx2){
 
 }/*forstatement sk*/
 
+// [ ] case <simpleexpressioin> of <常数>{,<常数>} : <语句> {;<常数>{,<常数>} : <语句>} [;else:<语句>] end;
 void casestatement(int &level, symset &fsys,int &cx1, int &cx2){
+    item x;
+    symbol typ;
+    int intra_list[20], intra_cnt;
+    int inter_list[20], inter_cnt;
 
+    labtab[lx] = cx;
+    lx = lx + 1;
+
+    getsym();
+    simpleexpression(set_of_enum(symbol)::of(ofsym, eos), x, level);
+    if(x.typ == ints) typ = intcon;
+    else if(x.typ == chars) typ = charcon;
+    else error(64);
+    if (sym != ofsym) error(65);
+    inter_cnt = 0;
+    while(sym != endsym && sym != elsesym){
+        getsym();
+        intra_cnt = 0;
+        while(sym != colon){
+            if (sym == typ)getsym();
+            else error(40);
+            gen(cpy, 0, 0);
+            gen(lit, 0, num);
+            gen(ne, 0, 0);
+            if (intra_cnt >= 20) error(66);
+            else intra_list[intra_cnt++] = cx;
+            gen(jpc, 0, 0);
+            if (sym == comma)getsym();
+            else if (sym != colon) error(24);
+        }
+        if (sym == colon) getsym();
+        else error(24);
+
+        cx1 = cx;
+        gen(jmp, 0, 0);
+        for(int i=0; i < intra_cnt; i++){
+            code[intra_list[i]].a = cx;
+        }
+        statement(fsys, level);
+        if (inter_cnt >= 20) error(66);
+        else inter_list[inter_cnt++] = cx;
+        gen(jmp, 0, 0);
+        code[cx1].a = cx;
+    }
+    if (sym == elsesym){
+        getsym();
+        if (sym == colon) getsym();
+        else error(24);
+        statement(fsys, level);
+    }
+    else if (sym == endsym){
+        getsym();
+    }
+    else error(36);
+
+    for(int i=0; i < inter_cnt; i++){
+        code[inter_list[i]].a = cx;
+    }
+    gen(pop, 0, 0);
+
+    labtab[lx] = cx;
+    lx = lx + 1;
 }/*casestatement sk*/
 
 void stanproc(int i, int &level, item &x, symset &fsys)
@@ -2108,4 +2171,6 @@ static void _split_whole_name(const char *whole_name, char *fname, char *ext)
  62: 应为until
  63: 应为to/downto
  64: 应是可枚举类型
+ 65: 应为of
+ 66: case常数列表过多
  sk*/

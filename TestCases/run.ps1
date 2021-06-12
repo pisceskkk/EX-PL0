@@ -9,6 +9,11 @@ Else {
 }
 [string]$test_basename = [io.path]::GetFileNameWithoutExtension($test_filename)
 
+If ([String]::IsNullOrEmpty($test_basename)){
+    Write-Host "Error filename!"
+    exit(1)
+}
+
 Write-Host "Removing $test_basename*(exclude $test_basename.pls)..."
 Remove-Item $test_basename* -Exclude $test_basename'.pls'
 

@@ -10,6 +10,7 @@ enum opcod {lit, lod, ilod, loda, lodt, sto, lodb, cpyb, jmp, jpc, red, wrt,
             cal, retp, endp, udis, opac, entp, ands, ors, nots, imod, mus, add,
             sub, mult, idiv, eq, ne, ls, le, gt, ge,
             radd, rsub, rmult, rdiv, rls, rle, rgt, rge, /* real. sk*/
+            cpy, pop, /* case. sk*/
             last_opcod
            };  /* opration code */
 struct instruction
@@ -78,6 +79,10 @@ int main(int argc, const char *argv[])
     do
     {
         i = code[pc];
+        /*
+        printf("sta[top]:%d\n",s[top]);
+        printf("pc:%d\t%d\t",pc,i.f);
+        */
         pc = pc + 1;
         switch (i.f)
         {
@@ -362,6 +367,17 @@ int main(int argc, const char *argv[])
         {
             top = top - 1;
             s[top] = (decode(s[top]) <= decode(s[top + 1]));
+        }
+        break;
+        case cpy: /* case. sk*/
+        {
+            top = top + 1;
+            s[top] = s[top-1];
+        }
+        break;
+        case pop :
+        {
+            top = top - 1;
         }
         break;
         }    /* case,with */

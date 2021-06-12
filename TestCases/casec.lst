@@ -1,0 +1,94 @@
+   0 program main;
+   0    var d,a:integer;
+   1 begin
+   2    a := 2;
+   5    case a*2 of
+   8       2 : d:=0;
+  17       4 : d:=1;
+  26       6 : d:=2
+  33    end;
+  36    case d of
+  37       1,4 : call write (-1);
+  50       2,5 : call write (0);
+  62       3,6,7 : call write (1)
+  77    end
+  78 end.
+   1  ENTP   1              5
+   2  LODA   1              4
+   3  LIT    0              2
+   4  STO    0              0
+   5  LOD    1              4
+   6  LIT    0              2
+   7  MULT   0              0
+   8  CPY    0              0
+   9  LIT    0              2
+  10  NE     0              0
+  11  JPC    0             13
+  12  JMP    0             17
+  13  LODA   1              3
+  14  LIT    0              0
+  15  STO    0              0
+  16  JMP    0             35
+  17  CPY    0              0
+  18  LIT    0              4
+  19  NE     0              0
+  20  JPC    0             22
+  21  JMP    0             26
+  22  LODA   1              3
+  23  LIT    0              1
+  24  STO    0              0
+  25  JMP    0             35
+  26  CPY    0              0
+  27  LIT    0              6
+  28  NE     0              0
+  29  JPC    0             31
+  30  JMP    0             35
+  31  LODA   1              3
+  32  LIT    0              2
+  33  STO    0              0
+  34  JMP    0             35
+  35  POP    0              0
+  36  LOD    1              3
+  37  CPY    0              0
+  38  LIT    0              1
+  39  NE     0              0
+  40  JPC    0             46
+  41  CPY    0              0
+  42  LIT    0              4
+  43  NE     0              0
+  44  JPC    0             46
+  45  JMP    0             50
+  46  LIT    0              1
+  47  MUS    0              0
+  48  WRT    0              0
+  49  JMP    0             78
+  50  CPY    0              0
+  51  LIT    0              2
+  52  NE     0              0
+  53  JPC    0             59
+  54  CPY    0              0
+  55  LIT    0              5
+  56  NE     0              0
+  57  JPC    0             59
+  58  JMP    0             62
+  59  LIT    0              0
+  60  WRT    0              0
+  61  JMP    0             78
+  62  CPY    0              0
+  63  LIT    0              3
+  64  NE     0              0
+  65  JPC    0             75
+  66  CPY    0              0
+  67  LIT    0              6
+  68  NE     0              0
+  69  JPC    0             75
+  70  CPY    0              0
+  71  LIT    0              7
+  72  NE     0              0
+  73  JPC    0             75
+  74  JMP    0             78
+  75  LIT    0              1
+  76  WRT    0              0
+  77  JMP    0             78
+  78  POP    0              0
+  79  ENDP   0              0

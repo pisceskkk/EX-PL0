@@ -4,52 +4,114 @@
    2     k:=0;
    5     x:=10;
    8     for index:= 1 to x do
-****       ^10
-****       ^10
-****             ^33
-****               ^23
-****                 ^40
-****                 ^13
-  10         begin
-****             ^23
-  10         case index mod 3 of
-****            ^10
-****            ^10
-****                  ^33
-****                           ^23
-  13             2: k:=k+0;
-****             ^40
-****             ^13
-  14             1: k:=k+1;
-****             ^13
-  19             0: k:=k+2
-****             ^13
-  22             end
-  24         end;
-****            ^13
-  25     call write(k);
-   1   ENTP  1    9
-   2  LODA   1    7
-   3  LIT    0    0
-   4  STO    0    0
-   5  LODA   1    8
-   6  LIT    0   10
-   7  STO    0    0
-   8  LODA   0    0
-   9  LOD    1    5
-  10  LODA   0    0
-  11  LOD    1    5
-  12  LIT    0    3
-  13  IMOD   0    0
-  14  LODA   1    7
-  15  LOD    1    7
-  16  LIT    0    1
-  17   ADD   0    0
-  18  STO    0    0
-  19  LODA   1    7
-  20  LOD    1    7
-  21  LIT    0    2
-  22   ADD   0    0
-  23  STO    0    0
-  24  ENDP   0    0
-****        ^38
+  15         begin
+  15         case index mod 3 of
+  18             2: k:=k+0;
+  29             1: k:=k+1;
+  40             0: k:=k+2
+  48             end
+  51         end;
+  58     call write(k);
+  60 
+  60 
+  60     repeat
+  60         case k mod 2 of
+  63             1: call write (1);
+  71             0: call write (0)
+  78         end;
+  80         k:=k/2
+  83     until k <2;
+  89     call write (k)
+  91 
+  91 end.
+   1  ENTP   1              9
+   2  LODA   1              7
+   3  LIT    0              0
+   4  STO    0              0
+   5  LODA   1              8
+   6  LIT    0             10
+   7  STO    0              0
+   8  LODA   1              5
+   9  LIT    0              1
+  10  STO    0              0
+  11  LOD    1              5
+  12  LOD    1              8
+  13  LE     0              0
+  14  JPC    0             58
+  15  LOD    1              5
+  16  LIT    0              3
+  17  IMOD   0              0
+  18  CPY    0              0
+  19  LIT    0              2
+  20  NE     0              0
+  21  JPC    0             23
+  22  JMP    0             29
+  23  LODA   1              7
+  24  LOD    1              7
+  25  LIT    0              0
+  26  ADD    0              0
+  27  STO    0              0
+  28  JMP    0             51
+  29  CPY    0              0
+  30  LIT    0              1
+  31  NE     0              0
+  32  JPC    0             34
+  33  JMP    0             40
+  34  LODA   1              7
+  35  LOD    1              7
+  36  LIT    0              1
+  37  ADD    0              0
+  38  STO    0              0
+  39  JMP    0             51
+  40  CPY    0              0
+  41  LIT    0              0
+  42  NE     0              0
+  43  JPC    0             45
+  44  JMP    0             51
+  45  LODA   1              7
+  46  LOD    1              7
+  47  LIT    0              2
+  48  ADD    0              0
+  49  STO    0              0
+  50  JMP    0             51
+  51  POP    0              0
+  52  LODA   1              5
+  53  LOD    1              5
+  54  LIT    0              1
+  55  ADD    0              0
+  56  STO    0              0
+  57  JMP    0             11
+  58  LOD    1              7
+  59  WRT    0              0
+  60  LOD    1              7
+  61  LIT    0              2
+  62  IMOD   0              0
+  63  CPY    0              0
+  64  LIT    0              1
+  65  NE     0              0
+  66  JPC    0             68
+  67  JMP    0             71
+  68  LIT    0              1
+  69  WRT    0              0
+  70  JMP    0             79
+  71  CPY    0              0
+  72  LIT    0              0
+  73  NE     0              0
+  74  JPC    0             76
+  75  JMP    0             79
+  76  LIT    0              0
+  77  WRT    0              0
+  78  JMP    0             79
+  79  POP    0              0
+  80  LODA   1              7
+  81  LOD    1              7
+  82  LIT    0              2
+  83  DDIV   0              0
+  84  STO    0              0
+  85  LOD    1              7
+  86  LIT    0              2
+  87  LS     0              0
+  88  JPC    0             60
+  89  LOD    1              7
+  90  WRT    0              0
+  91  ENDP   0              0
