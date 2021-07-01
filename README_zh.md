@@ -1,16 +1,22 @@
 # PL/0语法拓充
 
- ![platform: windows(shields.io)](https://img.shields.io/badge/platform-Windows-brightgreen)
+![GitHub](https://img.shields.io/github/license/pisceskkk/EX-PL0)
+![platform: windows(shields.io)](https://img.shields.io/badge/platform-Windows-brightgreen)
+![GitHub last commit](https://img.shields.io/github/last-commit/pisceskkk/EX-PL0)
+
+![GitHub watchers](https://img.shields.io/github/watchers/pisceskkk/EX-PL0?style=social)
+![GitHub Repo stars](https://img.shields.io/github/stars/pisceskkk/EX-PL0?style=social)
+![GitHub forks](https://img.shields.io/github/forks/pisceskkk/EX-PL0?style=social)
 
 对PL/0编译器（含中间代码解释器）进行语法拓充，包括`repeat`、`for`、`case`、`function`、`real`、`record`等内容。
 
 ## 内容
 
-- `\src\PL` 包含PL编译器源代码；
-- `\src\interpret` 包含中间代码解释器源代码；
-- `src\PL`和`src\interpret`中包含`Makefile`;
-- `\TestCases` 包含基础的测试用例（详见`PL编译测试用例说明.docx`）及运行脚本；
-- `TestCases\run1`为运行脚本，包括编译PL编译器、编译解释器、测试特定用例等功能。
+- [`src/PL`](https://github.com/pisceskkk/EX-PL0/tree/master/src/PL) 包含PL编译器源代码；
+- [`src/interpret`](https://github.com/pisceskkk/EX-PL0/tree/master/src/interpret) 包含中间代码解释器源代码；
+- `src/PL`和`src/interpret`中包含`Makefile`;
+- [`TestCases`](https://github.com/pisceskkk/EX-PL0/tree/master/TestCases) 包含基础的测试用例（详见`PL编译测试用例说明.docx`）及运行脚本；
+- `TestCases/run1`为运行脚本，包括编译PL编译器、编译解释器、测试特定用例等功能。
 
 ## 准备工作
 
@@ -18,20 +24,20 @@
 
 ## 开始
 
-### 使用`TestCases\run`的脚本
+### 使用`TestCases/run`的脚本
 
 #### 脚本列表
 
-1. `TestCases\run.ps1` 供Windows系统下 [`powershell`](https://github.com/powershell/powershell)使用的脚本
+1. [`TestCases/run.ps1`](https://github.com/pisceskkk/EX-PL0/blob/master/TestCases/run.ps1) 供Windows系统下 [`powershell`](https://github.com/powershell/powershell)使用的脚本
 
 #### 使用方法
 
 ```sh
 cd TestCases
 # 直接运行脚本，默认编译运行test1.pls文件
-.\run
+./run
 # 运行脚本时指定文件，编译运行特定文件
-.\run part1.pls
+./run part1.pls
 ```
 
 ### 手动编译
@@ -49,4 +55,4 @@ cd TestCases
 
 ## 开源协议
 
-[Apache 2.0](https://github.com/pisceskkk/EX-PL0/blob/main/LICENSE)
+[Apache 2.0](https://github.com/pisceskkk/EX-PL0/blob/master/LICENSE)
