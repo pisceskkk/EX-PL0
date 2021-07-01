@@ -41,9 +41,8 @@ enum symbol {nul, ident, intcon, charcon, plus, minus, times, divsym,
              TODO:
                 [x] repeat <语句> until <表达式>
                 [x] for <变量> := <表达式> to|downto <表达式> do <语句>
-                [ ] case <变量> of <常数>{,<常数>} : <语句> {;<常数>{,<常数>} : <语句>} [;else:<语句>] end;
+                [x] case <变量> of <常数>{,<常数>} : <语句> {;<常数>{,<常数>} : <语句>} [;else:<语句>] end;
                 [ ] function <标识符>[<参数表>]:<类型>; <程序体>|forward ;
-                    [ ] call function()
                 sk
              */
              realcon, recdcon, /* real, record. sk*/
