@@ -96,6 +96,7 @@ static void handle_error(file_descriptor* fd)
     } else if (fd->error == IO_EOF) {
         fprintf(stderr, "IO: access beyond end of file '%s'\n",
             fd->name ? fd->name : "input");
+            return;
     } else {
         if (fd->name) {
         fprintf(stderr, "IO: file '%s' ", fd->name);

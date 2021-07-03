@@ -33,12 +33,13 @@ boolean stop;
 integer h1, h2, h3;
 char ch;
 float num_real;
-void load()
+void load(const char *argv[])
 {
     integer i;
 
     output << "please input code file:" << NL;
-    input >> filecode;
+    // input >> filecode;
+    filecode = argv[0];
     assign(fcode, filecode);
     reset(fcode);
     i = 0;
@@ -65,7 +66,7 @@ int main(int argc, const char *argv[])
 {
     /* main */
     pio_initialize(argc, argv);
-    load();
+    load(argv);
     output << "START PL/0" << NL;
     oldtop = 0;
     stop = false;
