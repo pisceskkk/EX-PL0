@@ -138,7 +138,7 @@ float num_real;
 int cc;        /* character count */
 int ll;        /* line length */
 int kk, err;
-varying_string<81> line;
+varying_string<180> line;
 alfa a;
 int i;
 array<1, norw, alfa> word1;
@@ -441,7 +441,8 @@ void getch()
             line[ll] = ch;
         }
         listfile << NL;
-        sfile >> NL;
+        if(!eof(sfile))
+            sfile >> NL;
         ll = ll + 1;
         line[ll] = ' '; /*process end-line*/
     }
