@@ -14,14 +14,15 @@ If ([String]::IsNullOrEmpty($test_basename)){
     exit(1)
 }
 
-Write-Host "Removing $test_basename*(exclude $test_basename.pls)..."
-Remove-Item $test_basename* -Exclude $test_basename'.pls'
+Write-Host "Removing $test_basename[c]?.*(exclude $test_basename.pls)..."
+Remove-Item $test_basename'c'?'.'* -Exclude $test_basename'.pls'
 
 cd ../src/PL
 Write-Host "Compliling PL.exe..."
 Remove-Item *.exe
 make
 cp ./PL.exe $work_dir -Force
+cp ./PL.exe $work_dir/../bin -Force
 If ($?){
     Write-Host "Done."
 }
@@ -35,6 +36,7 @@ Write-Host "Compliling interpret.exe..."
 Remove-Item *.exe
 make
 cp ./interpret.exe $work_dir -Force
+cp ./interpret.exe $work_dir/../bin -Force
 If ($?){
     Write-Host "Done."
 }

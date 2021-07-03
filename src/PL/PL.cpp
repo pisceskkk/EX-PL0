@@ -16,7 +16,7 @@ const int txmax = 100;     /* length of identifier table */
 const int bmax = 20;       /* length of block inormation table */
 const int arrmax = 30;     /* length of array information table */
 const int nmax = 6;        /* max. no. of digits in numbers */
-const int al = 10;         /* length of identifiers */
+const int al = 20;         /* length of identifiers */
 const int amax = 2047;     /* maxinum address */
 const int levmax = 7;      /* maxinum depth of block nesting */
 const int cxmax = 1000;    /* size of code array */
@@ -42,7 +42,7 @@ enum symbol {nul, ident, intcon, charcon, plus, minus, times, divsym,
                 [x] repeat <语句> until <表达式>
                 [x] for <变量> := <表达式> to|downto <表达式> do <语句>
                 [x] case <变量> of <常数>{,<常数>} : <语句> {;<常数>{,<常数>} : <语句>} [;else:<语句>] end;
-                [ ] function <标识符>[<参数表>]:<类型>; <程序体>|forward ;
+                [x] function <标识符>[<参数表>]:<类型>; <程序体>|forward ;
                 sk
              */
              realcon, recdcon, /* real, record. sk*/
@@ -66,6 +66,7 @@ enum opcod {lit, lod, ilod, loda, lodt, sto, lodb, cpyb, jmp, jpc, red, wrt,
             sub, mult, idiv, eq, ne, ls, le, gt, ge,
             radd, rsub, rmult, rdiv, rls, rle, rgt, rge, /* real. sk*/
             cpy, pop, /* case. sk*/
+            ret, /*function. sk*/
             last_opcod
            };  /* opration code */
 /*******************************/
@@ -180,6 +181,13 @@ char dir[_MAX_DIR];
 char name[_MAX_FNAME];
 char ext[_MAX_EXT];
 
+/*    
+  list for
+  patching function address in (call,lev,adr) before declaration
+  */
+array<0, txmax, array<0, cxmax, int>> patch_list;
+array<0,txmax, int> patch_head;
+
 /*********************************************************/
 
 /*******************************
@@ -226,37 +234,39 @@ float decode(int i); /* real. sk*/
 void repeatstatement(int &cx1, int &level, symset &fsys); /* repeat. sk*/
 void forstatement(int &cx1, int &level, symset &fsys, int &cx2); /* for. sk*/
 void casestatement(int &level, symset &fsys, int &cx1, int &cx2); /* case. sk*/
+void funcstatement(int &level, symset &fsys); /* func. sk*/
+void funcdeclaration(int &level, symset fsys);
 
 /*******************************/
 void initial()
 {
-    word1[ 1] = "and       ";
-    word1[ 2] = "array     ";
-    word1[ 3] = "begin     ";
-    word1[ 4] = "call      ";
-    word1[ 5] = "case      "; /* case. sk*/
-    word1[ 6] = "const     ";
-    word1[ 7] = "do        "; /* for. sk*/
-    word1[ 8] = "downto    "; /* for. sk*/
-    word1[ 9] = "else      ";
-    word1[10] = "end       ";
-    word1[11] = "for       "; /* for. sk*/
-    word1[12] = "forward   "; /* function. sk*/
-    word1[13] = "function  "; /* function. sk*/
-    word1[14] = "if        ";
-    word1[15] = "mod       ";
-    word1[16] = "not       ";
-    word1[17] = "of        ";
-    word1[18] = "or        ";
-    word1[19] = "procedure ";
-    word1[20] = "program   ";
-    word1[21] = "repeat    "; /* repeat. sk*/
-    word1[22] = "then      ";
-    word1[23] = "to        ";
-    word1[24] = "type      ";
-    word1[25] = "until     "; /* repeat. sk*/
-    word1[26] = "var       ";
-    word1[27] = "while     ";
+    word1[ 1] = "and                 ";
+    word1[ 2] = "array               ";
+    word1[ 3] = "begin               ";
+    word1[ 4] = "call                ";
+    word1[ 5] = "case                "; /* case. sk*/
+    word1[ 6] = "const               ";
+    word1[ 7] = "do                  "; /* for. sk*/
+    word1[ 8] = "downto              "; /* for. sk*/
+    word1[ 9] = "else                ";
+    word1[10] = "end                 ";
+    word1[11] = "for                 "; /* for. sk*/
+    word1[12] = "forward             "; /* function. sk*/
+    word1[13] = "function            "; /* function. sk*/
+    word1[14] = "if                  ";
+    word1[15] = "mod                 ";
+    word1[16] = "not                 ";
+    word1[17] = "of                  ";
+    word1[18] = "or                  ";
+    word1[19] = "procedure           ";
+    word1[20] = "program             ";
+    word1[21] = "repeat              "; /* repeat. sk*/
+    word1[22] = "then                ";
+    word1[23] = "to                  ";
+    word1[24] = "type                ";
+    word1[25] = "until               "; /* repeat. sk*/
+    word1[26] = "var                 ";
+    word1[27] = "while               ";
 
     wsym[ 1] = andsym;
     wsym[ 2] = arraysym;
@@ -346,10 +356,11 @@ void initial()
     mnemonic[rge]  = "RGT   ";
     mnemonic[cpy]  = "CPY   "; /* case. sk*/
     mnemonic[pop]  = "POP   ";
+    mnemonic[ret]  = "RET   "; /*function. sk*/
 
 
     declbegsys = set_of_enum(symbol)::of(constsym, varsym, typesym, procsym, funcsym, eos); /* funcsym. sk*/
-    statbegsys = set_of_enum(symbol)::of(beginsym, callsym, ifsym, whilesym, repeatsym, casesym, forsym, funcsym, eos); /* repeatsym, casesym, forsym, funcsym. sk*/
+    statbegsys = set_of_enum(symbol)::of(beginsym, callsym, ifsym, whilesym, repeatsym, casesym, forsym, eos); /* repeatsym, casesym, forsym, funcsym. sk*/
     facbegsys = set_of_enum(symbol)::of(ident, intcon, lparen, notsym, charcon, realcon, recdcon, eos); /* realcon, recdcon. sk*/
     typebegsys = set_of_enum(symbol)::of(ident, arraysym, eos);
     constbegsys = set_of_enum(symbol)::of(plus, minus, intcon, charcon, ident, realcon, recdcon, eos); /* realcon, recdcon. sk*/
@@ -381,7 +392,6 @@ void enter(alfa x0, oobject x1, types x2, int x3)
         {
         case variable:
         case prosedure:
-        case function:  /* function. sk*/
             nametab[tx].adr = x3;
             break;
         case konstant:
@@ -396,16 +406,16 @@ void enter(alfa x0, oobject x1, types x2, int x3)
 
 void enterpreid()// Only at the begining. Init nametable and btab
 {
-    enter("          ", variable, notyp, 0);    /* sentinel */
-    enter("char      ", typel, chars, 1);
-    enter("integer   ", typel, ints,  1);
-    enter("boolean   ", typel, bool_, 1);
-    enter("false     ", konstant, bool_,  0);
-    enter("true      ", konstant, bool_,  1);
-    enter("read      ", prosedure, notyp, 1);
-    enter("write     ", prosedure, notyp, 2);
-    enter("real      ", typel, reals, 1); /* real. sk*/
-    enter("record    ", typel, recds, 1); /* recds. sk*/
+    enter("                    ", variable, notyp, 0);    /* sentinel */
+    enter("char                ", typel, chars, 1);
+    enter("integer             ", typel, ints,  1);
+    enter("boolean             ", typel, bool_, 1);
+    enter("false               ", konstant, bool_,  0);
+    enter("true                ", konstant, bool_,  1);
+    enter("read                ", prosedure, notyp, 1);
+    enter("write               ", prosedure, notyp, 2);
+    enter("real                ", typel, reals, 1); /* real. sk*/
+    enter("record              ", typel, recds, 1); /* recds. sk*/
     btab[0].last = tx;
     btab[0].lastpar = 1;
     btab[0].psize = 0;
@@ -486,6 +496,32 @@ L1:
     case 'x':
     case 'y':
     case 'z':
+    case 'A':
+    case 'B':
+    case 'C':
+    case 'D':
+    case 'E':
+    case 'F':
+    case 'G':
+    case 'H':
+    case 'I':
+    case 'J':
+    case 'K':
+    case 'L':
+    case 'M':
+    case 'N':
+    case 'O':
+    case 'P':
+    case 'Q':
+    case 'R':
+    case 'S':
+    case 'T':
+    case 'U':
+    case 'V':
+    case 'W':
+    case 'X':
+    case 'Y':
+    case 'Z':
     {
         /* identifier or reserved word */
         k = 0;
@@ -498,7 +534,7 @@ L1:
             }
             getch();
         }
-        while ((set::of(range('a', 'z'), range('0', '9'), eos).has(ch)));
+        while ((set::of(range('a', 'z'), range('A', 'Z'), range('0', '9'), eos).has(ch)));
         if (k >= kk)
               kk = k;    /* kk: last identifier length */
         else
@@ -806,7 +842,8 @@ void enter1( oobject k, int &level)
                 {
                 case variable:
                 case prosedure:
-                    nametab[tx].adr = 0;
+                case function: /* function. sk*/
+                    nametab[tx].adr = -1;
                     break;
                 case konstant:
                     nametab[tx].val = 0;
@@ -831,8 +868,9 @@ int position(alfa id, int &level)
     do
     {
         i = btab[display[j]].last;
-        while (nametab[i].name != id)
+        while (nametab[i].name != id){
             i = nametab[i].link;
+        }
         j = j - 1;
     }
     while (!((j < 0) || (i != 0)));
@@ -1083,7 +1121,7 @@ void paramenterlist(symset &fsys, int &level, int &dx)   /*formal parameter list
     if (sym == rparen)
     {
         getsym();
-        test(set_of_enum(symbol)::of(semicolon, eos), fsys, 13);
+        test(set_of_enum(symbol)::of(semicolon, colon, eos), fsys, 13);
     }
     else error(25);
 }/*parameterlist*/
@@ -1207,6 +1245,184 @@ void procdeclaration(int &level, symset &fsys)
     else error(23);
 }/*procdeclaration*/
 
+void funcdeclaration(int &level, symset fsys){
+    // output << "start funcdeclaration..." << NL;
+    getsym();
+    if (sym != ident){
+        error(22);
+        id = ' ';
+    }
+    alfa old_id = id;
+    int old_j = 0;
+    int j, l;
+    {
+        nametab[0].name = id;
+        j = btab[display[level]].last;
+        l = j;
+        while (nametab[j].name != id)  j = nametab[j].link;
+        if (j != 0) {
+            old_j = j;
+            nametab[j].name = "";
+        }
+        enter1(function, level);
+        j = tx;
+    }
+    nametab[j].name = id;
+    nametab[j].normal = true;
+    nametab[j].lev = level;
+    // output << level << " " << j << " " << id << NL;
+    level = level + 1;
+    fsys = fsys + set_of_enum(symbol)::of(semicolon, eos);
+    { /* block */
+        int dx;  /* data allocation index */
+        int tx0; /* initial table index */
+        int dx_func; /* dx of function variable*/
+        int sz_func; /* size of function variable*/
+        int cx0; /* initial code  index */
+        int prb;
+        /* block */
+        dx = 3;
+        if (level > levmax)  error(4);
+        enterblock();
+        prb = bx;
+        display[level] = bx;
+
+        id = old_id; /* declare variable with func's name in function. sk*/
+        getsym();
+        if((sym == lparen) && (level > 1))
+        {
+            tx0 = tx;
+            paramenterlist(fsys, level, dx);
+            if (sym == colon) { /* function variable. sk*/
+                id = old_id;
+                enter1(variable, level);
+                types tp;
+                int rf, sz, x, t0;
+                tp = notyp;
+                rf = 0;
+                sz = 0;
+                getsym();
+                if (sym != ident)
+                    error(22);
+                else
+                {
+                    x = position(id, level);
+                    if (x != 0)
+                    {
+                        //A1 &with = nametab[x];
+                        if (nametab[x].kind != typel)
+                            error(19);
+                        else
+                        {
+                            tp = nametab[x].typ;
+                            rf = nametab[x].ref;
+                            sz = nametab[x].size;
+                        }
+                    }
+                }
+                dx_func = dx;
+                sz_func = sz;
+                nametab[tx].typ = tp;
+                nametab[tx].ref = rf;
+                nametab[tx].adr = dx;
+                nametab[tx].lev = level;
+                nametab[tx].normal = true;
+                dx = dx + sz;
+
+                nametab[j].typ = tp;
+                nametab[j].size = sz;
+                getsym();
+            }
+            if (sym == semicolon)  getsym();
+            else error(23);
+        }
+        else  if (level > 1)
+            if (sym == semicolon)  getsym();
+            else error(23);
+        nametab[j].ref = prb;
+        // output << "!!!!!!!!!!!!!!" << old_id << tx << NL;
+        btab[prb].lastpar = tx-1; /* exclude function variable. */
+        btab[prb].psize = dx;
+
+        do
+        {
+            if (sym == fwdsym) break;
+            if (sym == constsym)
+            {
+                getsym();
+                do
+                {
+                    constdeclaration(level, fsys);
+                }
+                while (!(sym != ident));
+            }
+            if (sym == typesym)
+            {
+                getsym();
+                do
+                {
+                    typedeclaration(level, fsys);
+                }
+                while (!(sym != ident));
+            }
+            if (sym == varsym)
+            {
+                getsym();
+                do
+                {
+                    vardeclaration(level, fsys, dx);
+                }
+                while (!(sym != ident));
+            }
+            while (sym == procsym || sym == funcsym){
+                if (sym == procsym)
+                    procdeclaration(level, fsys);
+                else if (sym == funcsym)
+                    funcdeclaration(level, fsys);
+            }
+            test(statbegsys + set_of_enum(symbol)::of(ident, eos), declbegsys, 13);
+        }
+        while (!(! (declbegsys.has(sym))));
+        if (sym == fwdsym){ /* function. sk*/
+            getsym();
+            if (sym == semicolon){
+                getsym();
+            }
+            else {
+                error(23);
+            }
+            nametab[j].adr = -1;
+            level = level - 1;
+            if(old_j != 0){
+                for(int patch = 0; patch < patch_head[old_j]; patch++){ /* patch back address */
+                    patch_list[j][patch] = patch_list[old_j][patch];
+                }
+                patch_head[j] = patch_head[old_j];
+            }
+            // output << "end funcdeclaration with forward." << NL;
+            return;
+        }
+        labtab[lx] = cx;
+        lx = lx + 1;
+        cx0 = cx;
+        nametab[j].adr = cx;
+        if(old_j != 0)
+            for(int patch = 0; patch < patch_head[old_j]; patch++){ /* patch back address */
+                code[patch_list[old_j][patch]].a = cx;
+            }
+        gen(entp, level, dx); /* block entry */
+        statement(set_of_enum(symbol)::of(semicolon, endsym, eos) + fsys, level);
+        gen(ret, dx_func, sz_func); /*return*/
+        test(fsys, set_of_enum(symbol)::of(eos), 13);
+        listcode(cx0);
+        // output << "end funcdeclaration." << NL;
+    } /* block */
+    level = level - 1;
+    if (sym == semicolon)
+          getsym();
+    else error(23);
+}/*funcdeclaration*/
+
 void listcode(int &cx0)
 {
     int i;
@@ -1233,6 +1449,10 @@ void factor(symset fsys, item &x, int &level)
         {
             i = position(id, level);
             getsym();
+            if (sym == lparen && nametab[i].kind != function){
+                int tmp = level-1;
+                i = position(id, tmp);
+            }
             if (i == 0)  error(10);
             else
             {
@@ -1268,8 +1488,17 @@ void factor(symset fsys, item &x, int &level)
                 break;
                 case prosedure:
                 case typel:
+                {
                     error(41);
                     break;
+                }
+                case function: /* function. sk*/
+                {
+                    funcstatement(level, fsys);
+                    x.typ = nametab[i].typ;
+                    x.ref = nametab[i].ref;
+                    break;
+                }
                 }
             }
         }
@@ -1527,6 +1756,89 @@ void assignment(int &i, int &level, symset fsys)
     else gen(sto, 0, 0);
 }/*assignment*/
 
+void funcstatement(int &level, symset &fsys){
+    item x;
+    int lastp, cp, i, j, k;
+
+    // output << "start funcstatement..." << NL;
+    i = position(id, level);
+    int tmp = j;
+    while(nametab[i].kind != function && tmp > 0) i = position(id, tmp),tmp--;
+    if (nametab[i].kind != function) error(10);
+    // output << id << level << i<< NL;
+    gen(opac, 0, 0); /*open active record*/
+    lastp = btab[nametab[i].ref].lastpar;
+    // output << "lastp" << " "<< lastp << NL;
+    cp = i;
+    if (sym == lparen)
+    {
+        /*actual parameter list*/
+        do
+        {
+            getsym();
+            if (cp >= lastp)
+                error(29);
+            else
+            {
+                cp = cp + 1;
+                if (nametab[cp].normal)
+                {
+                    /*value parameter*/
+                    expression(fsys + set_of_enum(symbol)::of(comma, colon, rparen, eos), x, level);
+                    if (x.typ == nametab[cp].typ)
+                    {
+                        if (x.ref != nametab[cp].ref)
+                            error(31);
+                        else if (x.typ == arrays)
+                            gen(lodb, 0, atab[x.ref].size);
+                    }
+                    else error(31);
+                }
+                else           /*variable parameter*/
+                {
+                    if (sym != ident)
+                        error(22);
+                    else
+                    {
+                        k = position(id, level);
+                        getsym();
+                        if (k != 0)
+                        {
+                            if (nametab[k].kind != variable)  error (30);
+                            x.typ = nametab[k].typ;
+                            x.ref = nametab[k].ref;
+                            if (nametab[k].normal)
+                                gen(loda, nametab[k].lev, nametab[k].adr);
+                            else gen(lod, nametab[k].lev, nametab[k].adr);
+                            if (sym == lbrack)
+                                arrayelement(fsys + set_of_enum(symbol)::of(comma, rparen, eos), x, level);
+                            if    ((nametab[cp].typ != x.typ)
+                                    || (nametab[cp].ref != x.ref))
+                                error(31);
+                        }
+                    }
+                }   /*variable parameter*/
+            }
+            test(set_of_enum(symbol)::of(comma, rparen, eos), fsys, 13);
+        }
+        while (!(sym != comma));
+        if (sym == rparen)  getsym();
+        else error(25);
+    }
+    if (cp < lastp)  error(29);  /*too few actual parameters*/
+    for (int i = 0; i < nametab[i].size; i++)
+        gen(lit, 0, 0);
+    if (nametab[i].adr <= 0){ /* forward. sk*/
+        if(patch_head[i] > txmax)
+            error(68);
+        patch_list[i][patch_head[i]] = cx;
+        patch_head[i] += 1;
+    }
+    gen(cal, nametab[i].lev, nametab[i].adr);
+    if (nametab[i].lev < level)  gen(udis, nametab[i].lev, level);
+    // output << "end funcstatement" << NL;
+} /* funcstatement */
+
 void ifstatement(int &level, symset &fsys, int &cx1, int &cx2)
 {
     item x;
@@ -1572,6 +1884,7 @@ void compound(symset &fsys, int &level)
     }
     if (sym == endsym)
         getsym();
+       
     else error(36);
 }/*compound*/
 
@@ -1929,7 +2242,7 @@ void statement(symset fsys, int &level)
     item x;
     void arrayelement(symset fsys, item & x);
     /* statement */
-    test(statbegsys + set_of_enum(symbol)::of(ident, eos), fsys, 13);
+    test(statbegsys + set_of_enum(symbol)::of(ident, endsym, eos), fsys, 13);
     if (sym == ident)   assignment(i, level, fsys);
     else if (sym == callsym)
         call(level, fsys);
@@ -1945,7 +2258,7 @@ void statement(symset fsys, int &level)
         repeatstatement(cx1, level, fsys);
     else if (sym == casesym)
         casestatement(level, fsys, cx1, cx2);
-    test(fsys + set_of_enum(symbol)::of(elsesym, eos), set_of_enum(symbol)::of(eos), 13);
+    test(fsys + set_of_enum(symbol)::of(elsesym, semicolon, eos), set_of_enum(symbol)::of(eos), 13);
 }/* statement */
 
 void block( symset fsys, int level)
@@ -2009,7 +2322,12 @@ void block( symset fsys, int level)
             }
             while (!(sym != ident));
         }
-        while (sym == procsym)    procdeclaration(level, fsys);
+        while (sym == procsym || sym == funcsym){
+            if (sym == procsym)
+                procdeclaration(level, fsys);
+            else if (sym == funcsym)
+                funcdeclaration(level, fsys);
+        }
         test(statbegsys + set_of_enum(symbol)::of(ident, eos), declbegsys, 13);
     }
     while (!(! (declbegsys.has(sym))));
@@ -2172,4 +2490,5 @@ static void _split_whole_name(const char *whole_name, char *fname, char *ext)
  64: 应是可枚举类型
  65: 应为of
  66: case常数列表过多
+ 67: function重复定义
  sk*/
