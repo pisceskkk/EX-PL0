@@ -1040,7 +1040,7 @@ void paramenterlist(symset &fsys, int &level, int &dx)   /*formal parameter list
     tp = notyp;
     rf = 0;
     sz = 0;
-    test(set_of_enum(symbol)::of(ident, varsym, eos), fsys + set_of_enum(symbol)::of(rparen, eos), 7);
+    test(set_of_enum(symbol)::of(ident, varsym, rparen, eos), fsys + set_of_enum(symbol)::of(rparen, eos), 7);
     while (set_of_enum(symbol)::of(ident, varsym, eos).has(sym))
     {
         if (sym != varsym)
