@@ -51,6 +51,7 @@ There is `Makefile` in source dir. And you can just run `make` to compile PL com
 - [x] expand `case` statement
 - [ ] expand `function` statement
 - [x] expand `real` structure
+- [ ] implicit conversion from `int` to `real`
 - [ ] expand `record` structure
 - [x] `run` script for `powershell`
 - [ ] `run` script for `bash`
