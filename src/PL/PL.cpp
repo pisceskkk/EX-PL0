@@ -15,7 +15,7 @@ const int norw = 28;       /* no. of reserved words */
 const int txmax = 100;     /* length of identifier table */
 const int bmax = 20;       /* length of block inormation table */
 const int arrmax = 30;     /* length of array information table */
-const int nmax = 6;        /* max. no. of digits in numbers */
+const int nmax = 20;        /* max. no. of digits in numbers */
 const int al = 20;         /* length of identifiers */
 const int amax = 2047;     /* maxinum address */
 const int levmax = 7;      /* maxinum depth of block nesting */
@@ -139,7 +139,7 @@ float num_real;
 int cc;        /* character count */
 int ll;        /* line length */
 int kk, err;
-varying_string<81> line;
+varying_string<180> line;
 alfa a;
 int i;
 array<1, norw, alfa> word1;
@@ -451,7 +451,8 @@ void getch()
             line[ll] = ch;
         }
         listfile << NL;
-        sfile >> NL;
+        if(!eof(sfile))
+            sfile >> NL;
         ll = ll + 1;
         line[ll] = ' '; /*process end-line*/
     }
