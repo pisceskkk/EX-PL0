@@ -2050,7 +2050,7 @@ int main(int argc, const char *argv[])
     pio_initialize(argc, argv);
     output << "Please input source program file name:" << NL;
     // input >> sfile_buff >> NL;
-    sfile_buff = argv[0];
+    sfile_buff = argv[1];
     strcpy(sfilename, sfile_buff.get_body());
 
     output << sfilename << NL;

@@ -39,7 +39,7 @@ void load(const char *argv[])
 
     output << "please input code file:" << NL;
     // input >> filecode;
-    filecode = argv[0];
+    filecode = argv[1];
     assign(fcode, filecode);
     reset(fcode);
     i = 0;
