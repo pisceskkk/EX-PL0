@@ -49,7 +49,7 @@ There is `Makefile` in source dir. And you can just run `make` to compile PL com
 - [x] expand `repeat` statement
 - [x] expand `for` statement
 - [x] expand `case` statement
-- [ ] expand `function` statement
+- [x] expand `function` statement
 - [x] expand `real` structure
 - [ ] implicit conversion from `int` to `real`
 - [ ] expand `record` structure

@@ -49,7 +49,7 @@ cd TestCases
 - [x] 拓充`repeat`语法
 - [x] 拓充`for`语法
 - [x] 拓充`case`语法
-- [ ] 拓充`function`语法
+- [x] 拓充`function`语法
 - [x] 拓充`real`数据类型
 - [ ] 隐式类型转化
 - [ ] 拓充`record`数据类型
