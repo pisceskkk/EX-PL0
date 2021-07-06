@@ -2,15 +2,23 @@
    0     var d,a:real;
    1     function foo (m: real ) : real;
    1     begin
-   3         m := m -0.00001;
-   8         foo := m + 3e-2
-  11     end;
-  14 begin
-  15     a := 2e-2;
-  18     d := foo(a);
-  23     call write(d);
-  25     if ((d > 0.05) and (d - 0.05 < 0.0001)) or ((d < 0.05) and (0.05 - d < 0.0001)) then
-  44         call write(1)
-  47     else
-  47         call write(0)
-  50 end.
+   2         m := m -0.00001;
+   7         foo := m + 3e-2
+  10     end;
+   1  ENTP   2              5
+   2  LODA   2              3
+   3  LOD    2              3
+   4  LIT    0      925353388
+   5  RSUB   0              0
+   6  STO    0              0
+   7  LODA   2              4
+   8  LOD    2              3
+   9  LIT    0     1022739088
+  10  RADD   0              0
+  11  STO    0              0
+  12  RET    4              1
+  13 begin
+  14     a := 2e-2;
+  17     d := foo(a);
+  22     call write(d);
+  24     if ((d > 0.05) and (d - 0.05 < 0.0001)) or ((d < 0.05) and (0.05 - d < 0.0001)

@@ -11,6 +11,7 @@ enum opcod {lit, lod, ilod, loda, lodt, sto, lodb, cpyb, jmp, jpc, red, wrt,
             sub, mult, idiv, eq, ne, ls, le, gt, ge,
             radd, rsub, rmult, rdiv, rls, rle, rgt, rge, /* real. sk*/
             cpy, pop, /* case. sk*/
+            ret, /* function. sk*/
             last_opcod
            };  /* opration code */
 struct instruction
@@ -379,6 +380,17 @@ int main(int argc, const char *argv[])
         case pop :
         {
             top = top - 1;
+        }
+        break;
+        case ret:  /*function return*/
+        {
+            top = base - 1;
+            pc = s[top + 1];
+            base = s[top + 3];
+            for (int tmp = 0; tmp < i.a; tmp++){
+                s[top + 1 + tmp] = s[top + 3+i.l + tmp]; /* return value */
+            }
+            top = top + i.a;
         }
         break;
         }    /* case,with */
