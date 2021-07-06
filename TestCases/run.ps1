@@ -45,7 +45,7 @@ Else {
 cd $work_dir
 
 Write-Host "Running PL.exe..."
-echo $test_basename".pls" | ./PL.exe
+./PL.exe $test_basename".pls"
 If ($?){
     Write-Host "Done."
 }
@@ -55,7 +55,7 @@ Else {
 }
 
 Write-Host "Running interpret.exe..."
-echo $test_basename"c.pld" | ./interpret.exe
+./interpret.exe $test_basename"c.pld" 
 If ($?){
     Write-Host "Done."
 }
